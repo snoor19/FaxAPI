@@ -19,10 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +45,7 @@ import com.cosmos.fax.models.UploadPojo;
 import com.cosmos.fax.services.StorageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.ByteStreams;
 
 import ClickSend.ApiClient;
 import ClickSend.ApiException;
@@ -68,8 +72,10 @@ public class FaxTransactionController {
 	private void init() {
 		properties = new Properties();
 		try {
-			File file = ResourceUtils.getFile("classpath:config.properties");
-			InputStream in = new FileInputStream(file);
+			ClassPathResource classPathResource = new ClassPathResource("config.properties");
+//			File file = ResourceUtils.getFile("classpath:config.properties");
+//			InputStream in = new FileInputStream(file);
+			InputStream in = classPathResource.getInputStream();
 			properties.load(in);
 			System.out.println("Properties::" + properties);
 		} catch (IOException e) {
@@ -227,7 +233,7 @@ public class FaxTransactionController {
 		return result;
 	}
 
-	@Scheduled(initialDelay = 1000, fixedRate = 60000)
+	@Scheduled(initialDelay = 1000, fixedRate = 600000)
 	public void run() {
 		try {
 			System.out.println("Current time is :: " + Calendar.getInstance().getTime());
@@ -240,7 +246,14 @@ public class FaxTransactionController {
 			ResponseData data = getHistory(faxRequest);
 			System.out.println("Response Data::" + data);
 			properties.setProperty("history.starttime", faxRequest.getEndDate() + "");
-			File file = ResourceUtils.getFile("classpath:config.properties");
+			ClassPathResource classPathResource = new ClassPathResource("config.properties");
+			InputStream inputStream = classPathResource.getInputStream();
+			File file = File.createTempFile("config", ".properties");
+			try {
+				FileUtils.copyInputStreamToFile(inputStream, file);
+			} finally {
+				IOUtils.closeQuietly(inputStream);
+			}
 			FileOutputStream output = new FileOutputStream(file);
 			properties.store(output, "Configuration File");
 			output.close();
@@ -249,16 +262,15 @@ public class FaxTransactionController {
 				if (faxHistoryData.getData().size() > 0) {
 					faxHistoryData.getData().forEach(fax -> {
 						String faxNumber = fax.getTo();
-						System.out.println("FaxNumber::" + faxNumber);
 						String fileUrl = fax.getFileUrl();
-						try (BufferedInputStream in = new BufferedInputStream(new URL(fileUrl).openStream()); 
-								FileOutputStream fileOutputStream = new FileOutputStream("Test")) {   
-							byte dataBuffer[] = new byte[1024];    
-							int bytesRead;    
-							while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {       
-								fileOutputStream.write(dataBuffer, 0, bytesRead);    
-								}
-							} catch (IOException e) {
+						try (BufferedInputStream in = new BufferedInputStream(new URL(fileUrl).openStream());
+								FileOutputStream fileOutputStream = new FileOutputStream("Test")) {
+							byte dataBuffer[] = new byte[1024];
+							int bytesRead;
+							while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+								fileOutputStream.write(dataBuffer, 0, bytesRead);
+							}
+						} catch (IOException e) {
 						}
 						String path = null;
 						if (!faxLocations.containsKey(faxNumber)) {
@@ -267,11 +279,9 @@ public class FaxTransactionController {
 							String result = restTemplate.getForObject(uri, String.class);
 							JSONObject jsonObject = new JSONObject(result);
 							path = jsonObject.getString("path");
-							System.out.println("Fax Location::" + path);
 							faxLocations.put(faxNumber, path);
 						} else {
 							path = faxLocations.get(faxNumber);
-							System.out.println("Checking FaxLocation from Map::" + path);
 						}
 						if (path != null && !path.isEmpty()) {
 							String bucketName = path.split("/")[0];
@@ -279,10 +289,13 @@ public class FaxTransactionController {
 							String sitePath = path.substring(startIndex);
 							System.out.println("bucketName::" + bucketName + ", sitePath::" + sitePath);
 						}
+						String url = fax.getFileUrl();
+						String fileName = getFileName(url);
+						String filePath = downloadFile(url, fileName);
+						File uploadFile = new File(filePath);
+						storageService.upload("cosmos-dev-s3",
+								"cosmos-dev/Site_1646f8de8a4b4d9290b7e76811c4f455/Inbox/" + fileName, uploadFile);
 					});
-					File uploadFile = ResourceUtils.getFile("classpath:91FEFFDB-CF6A-471B-87ED-1058F86BF3E7.pdf");
-					System.out.println("ClassPath URL::"+ResourceUtils.CLASSPATH_URL_PREFIX);
-//					storageService.upload("cosmos-dev-s3", "cosmos-dev/Site_1646f8de8a4b4d9290b7e76811c4f455/Inbox/91FEFFDB-CF6A-471B-87ED-1058F86BF3E7.pdf", uploadFile);
 				}
 			}
 			System.out.println("Start Time After Reqest::" + properties.getProperty("history.starttime"));
@@ -292,13 +305,12 @@ public class FaxTransactionController {
 
 	}
 	
-	private String dowmloadFile(String url, String fileName) {
+	private String downloadFile(String url, String fileName) {
 		try {
 			String tmp_location = properties.getProperty("fax.tmpLocation");
 			InputStream inputStream = new URL(url).openStream();
-			Files.copy(inputStream, Paths.get(tmp_location+"\\"+fileName),
-					StandardCopyOption.REPLACE_EXISTING);
-			return tmp_location+"\\"+fileName;
+			Files.copy(inputStream, Paths.get(tmp_location + fileName), StandardCopyOption.REPLACE_EXISTING);
+			return tmp_location + fileName;
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -307,19 +319,21 @@ public class FaxTransactionController {
 		return null;
 	}
 
-	/*
-	 * private void uploadFileTos3bucket(String fileName, File file) {
-	 * s3client.putObject(new PutObjectRequest(bucketName, fileName, file)
-	 * .withCannedAcl(CannedAccessControlList.PublicRead)); }
-	 */
-
+	private String getFileName(String url) {
+		String fileIndexStart = properties.getProperty("fax.filIndexStart");
+		int indexFileStart = url.indexOf(fileIndexStart)+fileIndexStart.length();
+		String fileName = url.substring(indexFileStart,url.indexOf('?'));
+		return fileName;
+	}
 	
 	public static void main(String[] args) {
 
 		FaxTransactionController controller = new FaxTransactionController();
 		String url = "https://clicksend-api-downloads.s3.ap-southeast-2.amazonaws.com/_private/D5FFECE9-1856-4F94-9430-76AE378F99B2.pdf?X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAWKMIV4OKLNEYMPU5%2F20210728%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20210728T072936Z&X-Amz-SignedHeaders=host&X-Amz-Expires=1800&X-Amz-Signature=b01e2762ba6f8b5fc18cf25345242c86f63947c5f7497e21af816067f48a731b";
-		String fileName = url.substring(url.indexOf("_private/"),url.indexOf('?'));
-		/* String result = controller.dowmloadFile(url,"test.pdf"); */
+		String fileIndexStart = "_private/";
+		int indexFileStart = url.indexOf(fileIndexStart)+fileIndexStart.length();
+		System.out.println("indexFileStart::"+indexFileStart);
+		String fileName = url.substring(indexFileStart,url.indexOf('?'));
 		
 		System.out.println("Result ::" + fileName);
 		

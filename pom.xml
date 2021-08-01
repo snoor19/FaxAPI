@@ -63,13 +63,11 @@
 			<version>2.9.2</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.plugin/spring-plugin-core -->
 		<dependency>
 			<groupId>org.springframework.plugin</groupId>
 			<artifactId>spring-plugin-core</artifactId>
 			<version>1.2.0.RELEASE</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.json/json -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -77,20 +75,27 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>com.github.clicksend</groupId>
 			<artifactId>clicksend-java-client</artifactId>
 			<version>1.0.0</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
-	        <groupId>com.amazonaws</groupId>
-	        <artifactId>aws-java-sdk</artifactId>
-	        <version>1.11.931</version>
-    	</dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.931</version>
+		</dependency>
 	</dependencies>
-	
-	
+
+
 
 	<build>
 		<plugins>
