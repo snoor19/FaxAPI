@@ -13,6 +13,10 @@ public class FaxRequest {
 	private String country;
 	private String fromEmail;
 	private String fileContent;
+	private String type;
+	private boolean needDummyResponse;
+	private Integer page;
+	private Integer limit; 
 
 	public Integer getStartDate() {
 		return startDate;
@@ -108,5 +112,37 @@ public class FaxRequest {
 
 	public void setFileContent(String fileContent) {
 		this.fileContent = fileContent;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public boolean isNeedDummyResponse() {
+		return needDummyResponse;
+	}
+
+	public void setNeedDummyResponse(boolean needDummyResponse) {
+		this.needDummyResponse = needDummyResponse;
+	}
+
+	public Integer getPage() {
+		return page;
+	}
+
+	public void setPage(Integer page) {
+		this.page = page;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 }

@@ -273,7 +273,7 @@ public class FaxTransactionController {
 						} catch (IOException e) {
 						}
 						String path = null;
-						if (!faxLocations.containsKey(faxNumber)) {
+						if (!faxLocations.containsKey(faxNumber)) {	
 							final String uri = properties.getProperty("fax.getLocationAPI") + faxNumber.substring(1);
 							RestTemplate restTemplate = new RestTemplate();
 							String result = restTemplate.getForObject(uri, String.class);

@@ -16,8 +16,8 @@ public class CosmosFaxApiApplication {
 		SpringApplication.run(CosmosFaxApiApplication.class, args);
 	}
 
-	@GetMapping("/hello")
-	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
+	@GetMapping("/")
+	public String hello(@RequestParam(value = "name", defaultValue = "Welcome to Fax API") String name) {
 		return String.format("Hello %s!", name);
 	}
 
