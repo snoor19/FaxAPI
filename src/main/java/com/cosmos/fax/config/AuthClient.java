@@ -6,10 +6,13 @@ import ClickSend.ApiClient;
 import ClickSend.Configuration;
 import ClickSend.auth.HttpBasicAuth;
 
+/**
+ * 
+ * @author snoor
+ *
+ */
 public class AuthClient implements Serializable {
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 2021610456638148529L;
 	private static AuthClient instance = null;
 	public static ApiClient apiClient = null;

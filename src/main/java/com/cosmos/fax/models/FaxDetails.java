@@ -10,6 +10,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * 
+ * @author snoor
+ *
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "user_id", "subaccount_id", "list_id", "message_id", "to", "from", "carrier", "country",
 		"custom_string", "schedule", "message_pages", "message_price", "status", "status_code", "status_text",

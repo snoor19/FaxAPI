@@ -55,6 +55,11 @@ import ClickSend.Model.FaxMessage;
 import ClickSend.Model.FaxMessageCollection;
 import ClickSend.Model.UploadFile;
 
+/**
+ * 
+ * @author snoor
+ *
+ */
 @RestController
 @RequestMapping("fax")
 public class FaxTransactionController {

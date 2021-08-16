@@ -1,5 +1,10 @@
 package com.cosmos.fax.models;
 
+/**
+ * 
+ * @author snoor
+ *
+ */
 public class FaxRequest {
 	private Integer startDate;
 	private Integer endDate;

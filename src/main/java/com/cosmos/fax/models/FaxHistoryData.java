@@ -11,6 +11,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * 
+ * @author snoor
+ *
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "total", "per_page", "current_page", "last_page", "next_page_url", "prev_page_url", "from", "to",
 		"data" })
