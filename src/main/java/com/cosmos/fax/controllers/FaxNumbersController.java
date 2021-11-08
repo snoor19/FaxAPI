@@ -30,6 +30,7 @@ import com.cosmos.fax.models.ResponseData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ClickSend.ApiClient;
 import ClickSend.ApiException;
 import ClickSend.Api.NumberApi;
 
@@ -102,8 +103,49 @@ public class FaxNumbersController {
 				return response;
 		    }
 	}
+	
 	@PostMapping("/purchase/{dedicated_number}")
 	public Object purchaseDedicatedNumber(@PathVariable String dedicated_number){
+		ResponseData responseData = null;
+		if( dedicated_number == null || dedicated_number.isEmpty()) {
+			responseData = new ResponseData();
+			responseData.setResponseCode("Please provide valid dedicated Number");
+			responseData.setHttpCode(400);
+			return responseData;
+		}
+		try {
+	    	RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.set("authorization",
+					"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
+			httpHeaders.set("Content-Type", "application/json");
+			String url = "https://rest.clicksend.com/v3/numbers/buy/"+dedicated_number;
+			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
+					"5EE1947E-178E-E0E6-0540-E237EC965D68"));
+			ResponseEntity response = restTemplate.exchange(url, HttpMethod.POST, null, String.class);
+			System.out.println("Response Data::" + response.getBody());
+			String data = (String) response.getBody();
+			System.out.println("Data Value ::"+data);
+			JSONObject jsonObject = new JSONObject(data);
+			ObjectMapper mapper = new ObjectMapper();
+			FaxContact contactsData = mapper.readValue(jsonObject.get("data").toString(), FaxContact.class);
+			responseData = new ResponseData();
+			responseData.setResponseCode("Success");
+			responseData.setHttpCode(200);
+			responseData.setData(contactsData);
+			return responseData;
+	    } catch (Exception e) {
+	        System.err.println("Exception when calling NumberApi#numbersSearchByCountryGet");
+	        e.printStackTrace();
+	        responseData = new ResponseData();
+	        responseData.setResponseCode(e.getMessage());
+	        responseData.setHttpCode(500);
+			return responseData;
+	    }
+	}
+	
+	@PostMapping("/purchase/sdk/{dedicated_number}")
+	public Object purchaseDedicatedNumberWithSDK(@PathVariable String dedicated_number){
 		ResponseData response = null;
 		if( dedicated_number == null || dedicated_number.isEmpty()) {
 			response = new ResponseData();
@@ -140,15 +182,48 @@ public class FaxNumbersController {
 	}
 
 	public static void main(String[] args) {
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.set("authorization",
-				"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
-		httpHeaders.set("Content-Type", "application/json");
-		String url = "https://rest.clicksend.com/v3/numbers/search/US?type=fax";
-		restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
-				"5EE1947E-178E-E0E6-0540-E237EC965D68"));
-		ResponseEntity response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
-		System.out.println("Response Data::" + response.getBody());
+		/*
+		 * RestTemplate restTemplate = new RestTemplate(); HttpHeaders httpHeaders = new
+		 * HttpHeaders(); httpHeaders.set("authorization",
+		 * "Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4"
+		 * ); httpHeaders.set("Content-Type", "application/json"); String url =
+		 * "https://rest.clicksend.com/v3/numbers/search/US?type=fax";
+		 * restTemplate.getInterceptors().add(new
+		 * BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
+		 * "5EE1947E-178E-E0E6-0540-E237EC965D68")); ResponseEntity response =
+		 * restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+		 * System.out.println("Response Data::" + response.getBody());
+		 */
+		
+		ResponseData responseData = null;
+		try {
+	    	RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.set("authorization",
+					"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
+			httpHeaders.set("Content-Type", "application/json");
+			String url = "https://rest.clicksend.com/v3/numbers/buy/+18443974833";
+			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
+					"5EE1947E-178E-E0E6-0540-E237EC965D68"));
+			ResponseEntity response = restTemplate.exchange(url, HttpMethod.POST, null, String.class);
+			System.out.println("Response Data::" + response.getBody());
+			String data = (String) response.getBody();
+			System.out.println("Data Value ::"+data);
+			JSONObject jsonObject = new JSONObject(data);
+			ObjectMapper mapper = new ObjectMapper();
+			FaxContact contactsData = mapper.readValue(jsonObject.get("data").toString(), FaxContact.class);
+			responseData = new ResponseData();
+			responseData.setResponseCode("Success");
+			responseData.setHttpCode(200);
+			responseData.setData(contactsData);
+			System.out.println("Data::"+responseData);
+		} catch (Exception e) {
+	        System.err.println("Exception when calling NumberApi#numbersSearchByCountryGet");
+	        e.printStackTrace();
+	        responseData = new ResponseData();
+	        responseData.setResponseCode(e.getMessage());
+	        responseData.setHttpCode(500);
+	        System.out.println("Data::"+responseData);
+	    }
 	}
 }
