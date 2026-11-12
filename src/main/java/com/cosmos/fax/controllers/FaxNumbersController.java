@@ -77,11 +77,11 @@ public class FaxNumbersController {
 		    	RestTemplate restTemplate = new RestTemplate();
 				HttpHeaders httpHeaders = new HttpHeaders();
 				httpHeaders.set("authorization",
-						"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
+						"Basic dfnjklnadfkjlandflkj");
 				httpHeaders.set("Content-Type", "application/json");
 				String url = "https://rest.clicksend.com/v3/numbers/search/US"+queryString;
-				restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
-						"5EE1947E-178E-E0E6-0540-E237EC965D68"));
+				restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("noor@gmail.com",
+						"5EE1947E-1911-E0E6-3529-E237EC965D68"));
 				ResponseEntity response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
 				System.out.println("Response Data::" + response.getBody());
 				String data = (String) response.getBody();
@@ -117,11 +117,11 @@ public class FaxNumbersController {
 	    	RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.set("authorization",
-					"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
+					"Basic adfsdfsdfsdf");
 			httpHeaders.set("Content-Type", "application/json");
 			String url = "https://rest.clicksend.com/v3/numbers/buy/"+dedicated_number;
-			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
-					"5EE1947E-178E-E0E6-0540-E237EC965D68"));
+			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("noor@gmail.com",
+					"5EE1947E-1911-E0E6-3529-E237EC965D68"));
 			ResponseEntity response = restTemplate.exchange(url, HttpMethod.POST, null, String.class);
 			System.out.println("Response Data::" + response.getBody());
 			String data = (String) response.getBody();
@@ -200,11 +200,11 @@ public class FaxNumbersController {
 	    	RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders httpHeaders = new HttpHeaders();
 			httpHeaders.set("authorization",
-					"Basic cHVybmFjY0Bjb3Ntb3NjbGluaWNhbC5jb206NUVFMTk0N0UtMTc4RS1FMEU2LTA1NDAtRTIzN0VDOTY1RDY4");
+					"Basic adfsdknfsdj,njksdfnsfj");
 			httpHeaders.set("Content-Type", "application/json");
 			String url = "https://rest.clicksend.com/v3/numbers/buy/+18443974833";
-			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("purnacc@cosmosclinical.com",
-					"5EE1947E-178E-E0E6-0540-E237EC965D68"));
+			restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor("noor@gmail.com",
+					"5EE1947E-1911-E0E6-3529-E237EC965D68"));
 			ResponseEntity response = restTemplate.exchange(url, HttpMethod.POST, null, String.class);
 			System.out.println("Response Data::" + response.getBody());
 			String data = (String) response.getBody();
